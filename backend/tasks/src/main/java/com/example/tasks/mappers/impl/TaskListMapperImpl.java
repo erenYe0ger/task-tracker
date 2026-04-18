@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Component
@@ -23,6 +24,15 @@ public class TaskListMapperImpl implements TaskListMapper {
 
     @Override
     public TaskList fromDto(TaskListDto taskListDto) {
+
+        if(taskListDto.id() != null) {
+            try {
+                UUID enteredId = UUID.fromString(taskListDto.id().toString());
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("ID not in valid UUID format!");
+            }
+        }
+
         return new TaskList(
                 taskListDto.id(),
                 taskListDto.title(),
@@ -41,7 +51,7 @@ public class TaskListMapperImpl implements TaskListMapper {
         return new TaskListDto(
                 taskList.getId(),
                 taskList.getTitle(),
-                taskList.getDescription(),
+                taskList.getDescription() == null ? "" : taskList.getDescription(),
                 Optional.ofNullable(taskList.getTasks()).map(List::size).orElse(0),
                 calculateTaskListProgress(taskList.getTasks()),
                 Optional.ofNullable(taskList.getTasks())
@@ -54,7 +64,7 @@ public class TaskListMapperImpl implements TaskListMapper {
 
     public Double calculateTaskListProgress(List<Task> tasks) {
 
-        if(tasks == null) return null;
+        if(tasks == null || tasks.isEmpty()) return 0.0;
 
         long closedTaskCount = tasks.stream().filter(task ->
                 task.getStatus() == TaskStatus.CLOSED)

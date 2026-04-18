@@ -30,7 +30,7 @@ public class TaskListServiceImpl implements TaskListService {
             throw new IllegalArgumentException("TaskList already has an ID!");
         }
 
-        if(taskList.getTitle() == null || taskList.getTitle().isEmpty()) {
+        if(taskList.getTitle() == null || taskList.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("No title provided!");
         }
 
