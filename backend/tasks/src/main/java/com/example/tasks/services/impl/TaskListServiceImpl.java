@@ -4,6 +4,7 @@ import com.example.tasks.domain.entities.TaskList;
 import com.example.tasks.repositories.TaskListRepository;
 import com.example.tasks.services.TaskListService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class TaskListServiceImpl implements TaskListService {
 
     private final TaskListRepository taskListRepository;
@@ -21,6 +23,7 @@ public class TaskListServiceImpl implements TaskListService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskList> listTaskLists() {
         return taskListRepository.findAll();
     }
@@ -52,6 +55,7 @@ public class TaskListServiceImpl implements TaskListService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<TaskList> getTaskList(UUID taskListId) {
         return taskListRepository.findById(taskListId);
     }
