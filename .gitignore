@@ -2,10 +2,9 @@
 # Java / Spring Boot
 # ======================
 target/
-*.log
 *.class
-
-# Maven wrapper
+*.jar
+*.war
 .mvn/wrapper/maven-wrapper.jar
 
 # ======================
@@ -13,6 +12,8 @@ target/
 # ======================
 node_modules/
 dist/
+dist-ssr
+*.local
 build/
 
 # ======================
@@ -22,8 +23,13 @@ build/
 *.iml
 *.iws
 *.ipr
-
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # ======================
 # OS files
@@ -36,6 +42,8 @@ Thumbs.db
 # ======================
 .env
 .env.*
+*.env
+*.env.local
 
 # ======================
 # Logs
