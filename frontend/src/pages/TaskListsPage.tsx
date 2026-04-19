@@ -9,7 +9,7 @@ import {
 import TaskListForm from "../components/TaskListForm";
 import TasksPage from "./TasksPage";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TaskListItem from "../components/TaskListItem";
 
 export default function TaskListsPage() {
@@ -25,6 +25,10 @@ export default function TaskListsPage() {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+
+    const handleTaskChange = useCallback((updated: TaskList) => {
+        setSelectedTaskList(updated);
+    }, []);
 
     const fetchTaskLists = () => {
         getTaskLists()
@@ -85,7 +89,11 @@ export default function TaskListsPage() {
         return (
             <TasksPage
                 taskList={selectedTaskList}
-                onBack={() => setSelectedTaskList(null)}
+                onBack={() => {
+                    setSelectedTaskList(null);
+                    fetchTaskLists();
+                }}
+                onTaskChange={handleTaskChange}
             />
         );
     }

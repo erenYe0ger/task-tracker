@@ -27,6 +27,28 @@ export default function TaskListItem({
                             {taskList.description}
                         </p>
                     )}
+                    {!!taskList.count && taskList.count > 0 && (
+                        <div className="mt-2">
+                            <div className="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>
+                                    {taskList.count} task
+                                    {taskList.count !== 1 ? "s" : ""}
+                                </span>
+                                <span>
+                                    {Math.round((taskList.progress ?? 0) * 100)}
+                                    %
+                                </span>
+                            </div>
+                            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-indigo-500 rounded-full transition-all"
+                                    style={{
+                                        width: `${Math.round((taskList.progress ?? 0) * 100)}%`,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex gap-1 shrink-0">

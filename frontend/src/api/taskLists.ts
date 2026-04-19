@@ -2,11 +2,19 @@ export type TaskList = {
     id: string;
     title: string;
     description?: string;
+    count?: number;
+    progress?: number;
 };
 
 const BASE_URL = "http://192.168.2.19:8080";
 
-export async function getTaskLists(): Promise<TaskList[]> {
+export const getTaskList = async (id: string): Promise<TaskList> => {
+    const res = await fetch(`${BASE_URL}/task-lists/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch task list");
+    return res.json();
+};
+
+export const getTaskLists = async (): Promise<TaskList[]> => {
     const res = await fetch(`${BASE_URL}/task-lists`);
 
     if (!res.ok) {
@@ -14,7 +22,7 @@ export async function getTaskLists(): Promise<TaskList[]> {
     }
 
     return res.json();
-}
+};
 
 export async function createTaskList(data: {
     title: string;

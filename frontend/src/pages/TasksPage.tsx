@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     getTasks,
     createTask,
@@ -7,16 +7,21 @@ import {
     type Task,
     type TaskPriority,
 } from "../api/tasks";
-import type { TaskList } from "../api/taskLists";
+import { getTaskList, type TaskList } from "../api/taskLists";
 import TaskForm from "../components/TaskForm";
 import TaskItem from "../components/TaskItem";
 
 type Props = {
     taskList: TaskList;
     onBack: () => void;
+    onTaskChange: (updated: TaskList) => void;
 };
 
-export default function TasksPage({ taskList, onBack }: Props) {
+export default function TasksPage({ taskList, onBack, onTaskChange }: Props) {
+    const refreshTaskList = useCallback(() => {
+        getTaskList(taskList.id).then(onTaskChange).catch(console.error);
+    }, [taskList.id, onTaskChange]);
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -29,11 +34,13 @@ export default function TasksPage({ taskList, onBack }: Props) {
 
     const fetchTasks = () => {
         getTasks(taskList.id).then(setTasks).catch(console.error);
+        refreshTaskList();
     };
 
     useEffect(() => {
         getTasks(taskList.id).then(setTasks).catch(console.error);
-    }, [taskList.id]);
+        refreshTaskList();
+    }, [taskList.id, refreshTaskList]);
 
     const resetForm = () => {
         setTitle("");
@@ -128,6 +135,30 @@ export default function TasksPage({ taskList, onBack }: Props) {
                                     {taskList.description}
                                 </p>
                             )}
+                            {!!taskList.count && taskList.count > 0 && (
+                                <div className="mt-3 w-64">
+                                    <div className="flex justify-between text-xs text-slate-400 mb-1">
+                                        <span>
+                                            {taskList.count} task
+                                            {taskList.count !== 1 ? "s" : ""}
+                                        </span>
+                                        <span>
+                                            {Math.round(
+                                                (taskList.progress ?? 0) * 100,
+                                            )}
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-indigo-500 rounded-full transition-all"
+                                            style={{
+                                                width: `${Math.round((taskList.progress ?? 0) * 100)}%`,
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         {!isFormOpen && (
                             <button
@@ -165,24 +196,23 @@ export default function TasksPage({ taskList, onBack }: Props) {
                         <p className="text-sm mt-1">Add one to get started</p>
                     </div>
                 ) : !isFormOpen ? (
-                    [...tasks]
-                        .reverse()
-                        .map((task) => (
-                            <TaskItem
-                                key={task.id}
-                                task={task}
-                                taskListId={taskList.id}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                                onToggle={(updated) =>
-                                    setTasks((prev) =>
-                                        prev.map((t) =>
-                                            t.id === updated.id ? updated : t,
-                                        ),
-                                    )
-                                }
-                            />
-                        ))
+                    [...tasks].reverse().map((task) => (
+                        <TaskItem
+                            key={task.id}
+                            task={task}
+                            taskListId={taskList.id}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onToggle={(updated) => {
+                                setTasks((prev) =>
+                                    prev.map((t) =>
+                                        t.id === updated.id ? updated : t,
+                                    ),
+                                );
+                                refreshTaskList();
+                            }}
+                        />
+                    ))
                 ) : null}
             </div>
         </div>
