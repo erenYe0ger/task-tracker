@@ -6,7 +6,7 @@ export type TaskList = {
     progress?: number;
 };
 
-const BASE_URL = "http://192.168.2.19:8080";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getTaskList = async (id: string): Promise<TaskList> => {
     const res = await fetch(`${BASE_URL}/task-lists/${id}`);

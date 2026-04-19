@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.2.19:8080";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export type TaskStatus = "OPEN" | "CLOSED";
 export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
